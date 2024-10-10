@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eric's YouTube Downloader</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            background-color: #121212;
+            color: #ffffff;
+            padding: 20px;
+            height: 100vh;
+            justify-content: center;
+            box-sizing: border-box;
+            overflow: hidden; /* Prevents scrollbars from showing due to falling snowflakes */
+            position: relative; /* Added for absolute positioning of snowflakes */
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background-color: rgba(30, 30, 30, 0.7); /* Semi-transparent background */
+            color: #ffffff;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            backdrop-filter: blur(8px); /* Blur effect */
+        }
+        input::placeholder {
+            color: #aaaaaa;
+        }
+        input:focus {
+            border-color: #1e90ff;
+            outline: none;
+        }
+        img {
+            width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #1e90ff;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: none;
+        }
+        button:hover {
+            background-color: #1c86ee;
+        }
+        @media (max-width: 480px) {
+            input {
+                max-width: 90%;
+            }
+            img {
+                width: 100%;
+            }
+        }
+        .snowflake {
+            position: absolute;
+            top: -10%;
+            pointer-events: none;
+            color: white; /* Snowflake color */
+            font-size: 1em; /* Size of the snowflake */
+            opacity: 0.8;
+            user-select: none;
+            animation: fall linear infinite;
+            z-index: 1; /* Ensure snowflakes are below other content */
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(110vh); /* Snowflakes fall to the bottom */
+            }
+        }
+        .snowflake-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allow interaction with inputs/buttons */
+            z-index: 0; /* Set snowflakes below other content */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="snowflake-container"></div> <!-- Container for snowflakes -->
+    <h1>Eric's YouTube Downloader</h1>
+    <input type="text" id="youtubeInput" placeholder="Enter YouTube URL or Video ID" />
+
+    <img id="videoPreview" src="" alt="Video Preview" />
+    <button id="downloadButton">Download</button>
+
+    <script>
+        const youtubeInput = document.getElementById('youtubeInput');
+        const videoPreview = document.getElementById('videoPreview');
+        const downloadButton = document.getElementById('downloadButton');
+        const snowflakeContainer = document.querySelector('.snowflake-container');
+        const maxSnowflakes = 50; // Maximum number of snowflakes
+        let snowflakeCount = 0; // Current snowflake count
+
+        youtubeInput.addEventListener('input', function() {
+            const inputText = this.value.trim();
+            const lastSegment = inputText.split(/[\=\/]/).pop().trim();
+            const formattedText = encodeURIComponent(lastSegment);
+            videoPreview.src = `/preview/${formattedText}`;
+            if (lastSegment === "") {
+                videoPreview.style.display = "none";
+                downloadButton.style.display = "none";
+            } else {
+                videoPreview.style.display = "block";
+                downloadButton.style.display = "block";
+            }
+        });
+    
+        downloadButton.onclick = function() {
+            const inputText = youtubeInput.value.trim();
+            const lastSegment = inputText.split(/[\=\/]/).pop().trim();
+            const formattedText = encodeURIComponent(lastSegment);
+            const downloadUrl = `/download/${formattedText}`;
+            window.open(downloadUrl, '_blank');
+        };
+
+        function createSnowflake() {
+            if (snowflakeCount >= maxSnowflakes) {
+                return; // Do not create more snowflakes if the limit is reached
+            }
+
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.textContent = '❄'; // Snowflake character
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.fontSize = Math.random() * 1.5 + 0.5 + 'em'; // Random size
+            snowflake.style.animationDuration = Math.random() * 3 + 4 + 's'; // Random fall duration
+            snowflake.style.opacity = Math.random(); // Random opacity
+            
+            // Add random rotation
+            const rotation = Math.random() * 360; // Random rotation between 0 and 360 degrees
+            snowflake.style.transform += `rotate(${rotation}deg)`; // Apply rotation
+
+            snowflakeContainer.appendChild(snowflake); // Append snowflake to the container
+            snowflakeCount++; // Increment snowflake count
+
+            // Remove snowflake after animation
+            snowflake.addEventListener('animationend', () => {
+                snowflake.remove();
+                snowflakeCount--; // Decrement snowflake count
+            });
+        }
+
+        setInterval(createSnowflake, 1000); // Create a snowflake every 1000ms (1 second)
+    </script>
+
+</body>
+</html>
