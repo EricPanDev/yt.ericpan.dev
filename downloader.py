@@ -27,7 +27,9 @@ def get_video_thumbnail(video_url):
 
     ydl_opts = {
         'format': 'best',
-        'noplaylist': True
+        'noplaylist': True,
+        "username": "oauth2",
+        "password": ""
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
