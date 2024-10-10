@@ -6,7 +6,9 @@ def get_download_url(video_url):
 
     ydl_opts = {
         'format': 'best',
-        'noplaylist': True
+        'noplaylist': True,
+        "username": "oauth2",
+        "password": ""
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -31,7 +33,7 @@ def get_video_thumbnail(video_url):
         "username": "oauth2",
         "password": ""
     }
-
+    
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info_dict = ydl.extract_info(video_url, download=False)
         
